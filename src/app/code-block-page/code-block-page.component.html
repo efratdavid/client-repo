@@ -1,1 +1,10 @@
-<p>code-block-page works!</p>
+<div class="container">
+  <h1>{{ title }} Code Block</h1>
+  <div id="code-container">
+    <pre>
+      <code id="code" [contenteditable]="isMentor" [(ngModel)]="code" #codeEditor>
+        {{ code }}
+      </code>
+    </pre>
+  </div>
+</div>
