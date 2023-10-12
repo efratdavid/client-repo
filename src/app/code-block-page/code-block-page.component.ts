@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, Renderer2, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CodeBlockService } from '../code-block.service';
 import { SocketService } from '../socket.service';
@@ -22,7 +22,9 @@ export class CodeBlockPageComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private codeBlockService: CodeBlockService,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private renderer: Renderer2,
+    private el: ElementRef
   ) { }
 
   ngOnInit(): void {
@@ -48,6 +50,10 @@ export class CodeBlockPageComponent implements OnInit {
       this.socketService.on('mentor', (isMentor: boolean) => {
         this.isMentor = isMentor;
       });
+
+      // Set the contenteditable property based on isMentor
+      const codeDiv = this.el.nativeElement.querySelector('#code');
+      this.renderer.setProperty(codeDiv, 'contenteditable', !this.isMentor);
     });
 
     // Listen for code changes in the code editor
