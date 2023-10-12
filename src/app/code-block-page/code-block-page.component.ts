@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CodeBlockService } from '../code-block.service';
 import { SocketService } from '../socket.service';
+import hljs from 'highlight.js/lib/core';
+import javascript from 'highlight.js/lib/languages/javascript';
 
 @Component({
   selector: 'app-code-block-page',
@@ -53,5 +55,20 @@ export class CodeBlockPageComponent implements OnInit {
       // Automatically send code updates to the server via Socket.io
       this.socketService.emit('code-update', { id: this.codeBlockId, code: this.code });
     });
+    
+    // Apply syntax highlighting to the code using Highlight.js
+    this.highlightCode();
+  }
+
+  highlightCode() {
+    // Register JS language 
+    hljs.registerLanguage('javascript', javascript);
+
+    // Get the code element
+    const codeElement = document.getElementById('code');
+    if (codeElement) {
+      // Apply syntax highlighting
+      hljs.highlightBlock(codeElement);
+    }
   }
 }
