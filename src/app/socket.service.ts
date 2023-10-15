@@ -9,7 +9,11 @@ export class SocketService {
 
   constructor() {
     // Replace 'http://your-socket-io-server-url' with your Socket.io server URL
-    this.socket = io('http://localhost:3000');
+    this.socket = io('http://localhost:3000', { transports: ['websocket'] });
+
+    this.socket.on('connect', () => {
+      console.log('Socket.io connection established');
+    });
   }
 
   // Define Socket.io event listeners here

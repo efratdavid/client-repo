@@ -2,7 +2,7 @@
   <h1>Choose Code Block</h1>
   <ul>
     <li *ngFor="let codeBlock of codeBlocks">
-      <a routerLink="{{'/code-block/' + codeBlock.id}}">{{ codeBlock.title }}</a>
+      <a routerLink="{{'/code-block/' + codeBlock._id}}">{{ codeBlock.title }}</a>
     </li>
   </ul>
 </div>

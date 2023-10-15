@@ -1,13 +1,20 @@
-<div class="container">
-    <h1>{{ title }} Code Block</h1>
-    <div id="code-container">
-      <pre>
-        <div
-          id="code"
-          [textContent]="code"
-          #codeEditor
-        ></div>
-      </pre>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ title }}</h1>
+        <div id="code-container">
+          <pre [attr.contenteditable]="isMentor ? 'false' : 'true'">
+            <code id="code" class="language-javascript" [textContent]="code" #codeEditor></code>
+          </pre>
+        </div>
     </div>
-  </div>
+</body>
+
+
+
+
+
   
