@@ -1,17 +1,31 @@
-<head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-</head>
-<body>
-    <div class="container">
-        <h1>{{ title }}</h1>
-        <div id="code-container">
-          <pre [attr.contenteditable]="isMentor ? 'false' : 'true'">
-            <code id="code" class="language-javascript" [textContent]="code" #codeEditor></code>
-          </pre>
-        </div>
-    </div>
-</body>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <div class="container">
+            <h1>{{ title }}</h1>
+
+            <textarea #codeEditor></textarea>
+
+
+            <!--<pre><code
+                id="code"
+                class="javascript"
+                [attr.contenteditable]="isMentor ? 'false' : 'true'"
+                [attr.value]="code"
+                #codeEditor>
+                {{ code }}
+            </code></pre>-->
+
+            <div *ngIf="isCorrect">
+                <span>😄</span>
+            </div>
+        </div>          
+    </body>
+</html>
+
 
 
 

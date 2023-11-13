@@ -19,9 +19,4 @@ export class CodeBlockService {
   getCodeBlockById(id: string): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/codeblocks/${id}`);
   }
-
-  // Update a code block by ID
-  updateCodeBlockById(id: string, code: string): Observable<any> {
-    return this.http.put<any>(`${this.baseUrl}/codeblocks/${id}`, { code });
-  }
 }

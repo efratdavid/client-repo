@@ -2,10 +2,8 @@ import { Component, OnInit, ViewChild, Renderer2, ElementRef, AfterViewInit } fr
 import { ActivatedRoute } from '@angular/router';
 import { CodeBlockService } from '../code-block.service';
 import { SocketService } from '../socket.service';
-import hljs from 'highlight.js/lib/core';
-import javascript from 'highlight.js/lib/languages/javascript';
-import 'highlight.js/styles/default.css'; // Choose your desired theme
-hljs.registerLanguage('javascript', javascript);
+import * as CodeMirror from 'codemirror';
+import 'codemirror/mode/javascript/javascript';
 
 
 @Component({
@@ -13,22 +11,32 @@ hljs.registerLanguage('javascript', javascript);
   templateUrl: './code-block-page.component.html',
   styleUrls: ['./code-block-page.component.css']
 })
-export class CodeBlockPageComponent implements OnInit, AfterViewInit  {
+export class CodeBlockPageComponent implements OnInit, AfterViewInit {
   codeBlockId!: string | null;
   code!: string;
   title!: string;
   isMentor: boolean = false;
+  isCorrect: boolean = false;
+
+  private cm!: CodeMirror.Editor;
 
   @ViewChild('codeEditor')
   codeEditor!: ElementRef;
-
+  
   constructor(
     private route: ActivatedRoute,
     private codeBlockService: CodeBlockService,
     private socketService: SocketService,
-    private renderer: Renderer2,
-    private el: ElementRef
-  ) { }
+    //private renderer: Renderer2,
+    //private el: ElementRef
+  ) {
+    // Check if the role is already stored in sessionStorage
+    const storedRole = sessionStorage.getItem('role');
+
+    if (storedRole === 'mentor' || storedRole === 'student') {
+      this.isMentor = storedRole === 'mentor';
+    }
+  }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
@@ -37,54 +45,66 @@ export class CodeBlockPageComponent implements OnInit, AfterViewInit  {
       // Fetch the code block by ID using HTTP
       if (this.codeBlockId !== null) {
         this.codeBlockService.getCodeBlockById(this.codeBlockId).subscribe(data => {
-        this.code = data.code;
-        this.title = data.title;
+          this.code = data.code;
+          this.title = data.title;
+          this.isCorrect = data.solution.trim() === this.code.trim();
+          
+          this.cm.setValue(this.code);
+          this.cm.setOption('readOnly', this.isMentor);
         });
       }
-
-      // Listen for code updates from Socket.io server
-      this.socketService.on('code-updated', (data: any) => {
-        if (data.id === this.codeBlockId) {
-          this.code = data.code;
-        }
-      });
-
-      // Listen for the mentor flag received from the server
-      this.socketService.on('mentor', (isMentor: boolean) => {
-        console.log('isMentor: ', isMentor);
-        this.isMentor = isMentor;
-      });
-
-
-      /*// Set the contenteditable property based on isMentor
-      const codeDiv = this.el.nativeElement.querySelector('#code');
-      this.renderer.setProperty(codeDiv, 'contenteditable', !this.isMentor);*/
     });
   }
 
   ngAfterViewInit(): void {
-    // Listen for code changes in the code editor
-    this.codeEditor.nativeElement.addEventListener('input', () => {
-      // Automatically send code updates to the server via Socket.io
-      this.socketService.emit('code-update', { id: this.codeBlockId, code: this.code });
+    this.cm = CodeMirror.fromTextArea(this.codeEditor.nativeElement, {
+      mode: 'javascript', // Set the language mode
+      lineNumbers: true, // Display line numbers
+      theme: 'default', // Set the CodeMirror theme
+      readOnly: true // Initially set as read-only, will be updated based on role
     });
-  
-    // Apply syntax highlighting to the code using Highlight.js
-    this.highlightCode();
-  }
 
-  highlightCode() {
-    console.log('highlightCode called');
-    
-    // Register JS language 
-    //hljs.registerLanguage('javascript', javascript);
-    
+    // Listen for the mentor flag received from the server
+    this.socketService.on('mentor', (isMentor: boolean) => {
+        console.log('isMentor: ', isMentor);
+        this.isMentor = isMentor;
 
-    // Get the code element
-    const codeElement = document.getElementById('code');
-    if (codeElement) {
-      // Apply syntax highlighting
-      hljs.highlightElement(codeElement)
-    }
+        // Set the CodeMirror editor's read-only property based on the role
+        this.cm.setOption('readOnly', this.isMentor);
+
+        // Store the role in sessionStorage
+        sessionStorage.setItem('role', this.isMentor ? 'mentor' : 'student');
+    });
+
+    // Add a change event listener
+    this.cm.on('change', (cm: CodeMirror.Editor) => {
+      // Get the updated code whenever the content of the CodeMirror editor changes
+      const updatedCode = cm.getValue();
+      // Automatically send code updates to the server via Socket.io
+      this.socketService.emit('code-update', { _id: this.codeBlockId, code: updatedCode });
+    });
+
+    // Listen for code updates from Socket.io server
+    this.socketService.on('code-updated', (data: any) => {
+      if (data._id === this.codeBlockId) {
+        this.code = data.code;
+        const currentCode = this.cm.getValue();
+        const updatedCode = data.code;
+    
+        if (currentCode !== updatedCode) {
+          const cursor = this.cm.getCursor();
+    
+          // Update the editor's content only if it's different from the received data
+          this.cm.setValue(updatedCode);
+    
+          // Restore the cursor position
+          this.cm.setCursor(cursor);
+        }
+
+        this.isCorrect = data.solution.trim() === this.code.trim();
+      }
+    });
   }
 }
+
+
