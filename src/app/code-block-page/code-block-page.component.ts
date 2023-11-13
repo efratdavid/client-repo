@@ -26,9 +26,7 @@ export class CodeBlockPageComponent implements OnInit, AfterViewInit {
   constructor(
     private route: ActivatedRoute,
     private codeBlockService: CodeBlockService,
-    private socketService: SocketService,
-    //private renderer: Renderer2,
-    //private el: ElementRef
+    private socketService: SocketService
   ) {
     // Check if the role is already stored in sessionStorage
     const storedRole = sessionStorage.getItem('role');
@@ -47,10 +45,12 @@ export class CodeBlockPageComponent implements OnInit, AfterViewInit {
         this.codeBlockService.getCodeBlockById(this.codeBlockId).subscribe(data => {
           this.code = data.code;
           this.title = data.title;
-          this.isCorrect = data.solution.trim() === this.code.trim();
           
           this.cm.setValue(this.code);
           this.cm.setOption('readOnly', this.isMentor);
+
+          // Check if the correct solution matches the code in the editor (this.code)
+          this.isCorrect = data.solution.trim() === this.code.trim();
         });
       }
     });
@@ -101,6 +101,7 @@ export class CodeBlockPageComponent implements OnInit, AfterViewInit {
           this.cm.setCursor(cursor);
         }
 
+        // Check if the correct solution matches the code in the editor (this.code)
         this.isCorrect = data.solution.trim() === this.code.trim();
       }
     });
