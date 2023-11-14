@@ -16,7 +16,7 @@ export class SocketService {
       // Start sending keep-alive messages every 30 seconds 
       setInterval(() => {
         this.socket.emit('keep-alive');
-      }, 10000);
+      }, 5000);
     });
   }
 
