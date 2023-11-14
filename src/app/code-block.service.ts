@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class CodeBlockService {
-  private baseUrl = 'http://localhost:3000/coding-application'; 
+  private baseUrl = 'https://moveo-task-server-gold.vercel.app/coding-application'; 
 
   constructor(private http: HttpClient) { }
 
