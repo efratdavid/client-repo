@@ -1,14 +1,19 @@
 import { Injectable } from '@angular/core';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SocketService {
-  private socket: any;
+  private socket: Socket;
 
   constructor() {
-    this.socket = io('https://moveo-task-server.adaptable.app/', { transports: ['websocket'] });
+    // Initialize Socket.IO client with pingTimeout and pingInterval
+    this.socket = io('https://moveo-task-server.adaptable.app/', {
+      transports: ['websocket'],
+      pingTimeout: 120000, // 2 minutes
+      pingInterval: 5000  // 5 seconds
+    }as any);
 
     this.socket.on('connect', () => {
       console.log('Socket.io connection established');
