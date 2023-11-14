@@ -8,7 +8,7 @@ export class SocketService {
   private socket: any;
 
   constructor() {
-    this.socket = io('https://moveo-task-server-gold.vercel.app/', { transports: ['websocket'] });
+    this.socket = io('https://moveo-task-server.adaptable.app/', { transports: ['websocket'] });
 
     this.socket.on('connect', () => {
       console.log('Socket.io connection established');
