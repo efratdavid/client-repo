@@ -88,7 +88,7 @@ export class CodeBlockPageComponent implements OnInit, AfterViewInit {
       typingTimeout = setTimeout(() => {
         const updatedCode = this.cm.getValue();
         this.socketService.emit('code-update', { _id: this.codeBlockId, code: updatedCode });
-      }, 500); // Adjust the delay as needed
+      }, 1000); // Adjust the delay as needed
 
 
       /* Get the updated code whenever the content of the CodeMirror editor changes
