@@ -13,10 +13,10 @@ export class SocketService {
     this.socket.on('connect', () => {
       console.log('Socket.io connection established');
 
-      // Start sending keep-alive messages every 30 seconds 
+      /* Start sending keep-alive messages every 30 seconds 
       setInterval(() => {
         this.socket.emit('keep-alive');
-      }, 5000);
+      }, 30000);*/
     });
   }
 
