@@ -76,12 +76,25 @@ export class CodeBlockPageComponent implements OnInit, AfterViewInit {
         sessionStorage.setItem('role', this.isMentor ? 'mentor' : 'student');
     });
 
+
+    let typingTimeout: any; // Variable to store the timeout reference
+
     // Add a change event listener
     this.cm.on('change', (cm: CodeMirror.Editor) => {
-      // Get the updated code whenever the content of the CodeMirror editor changes
+      // Clear the previous timeout (if any) to reset the timer
+      clearTimeout(typingTimeout);
+
+      // Set a new timeout to wait for a brief moment before sending the update
+      typingTimeout = setTimeout(() => {
+        const updatedCode = this.cm.getValue();
+        this.socketService.emit('code-update', { _id: this.codeBlockId, code: updatedCode });
+      }, 500); // Adjust the delay as needed
+
+
+      /* Get the updated code whenever the content of the CodeMirror editor changes
       const updatedCode = cm.getValue();
       // Automatically send code updates to the server via Socket.io
-      this.socketService.emit('code-update', { _id: this.codeBlockId, code: updatedCode });
+      this.socketService.emit('code-update', { _id: this.codeBlockId, code: updatedCode });*/
     });
 
     // Listen for code updates from Socket.io server
