@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { io } from 'socket.io-client';
-import { NgZone } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -8,19 +7,17 @@ import { NgZone } from '@angular/core';
 export class SocketService {
   private socket: any;
 
-  constructor(private zone: NgZone) {
-    this.zone.runOutsideAngular(() => {
-      this.socket = io('https://moveo-task-server.adaptable.app/', { transports: ['websocket'] });
+  constructor() {
+    this.socket = io('https://moveo-task-server.adaptable.app/', { transports: ['websocket'] });
 
-      this.socket.on('connect', () => {
-        console.log('Socket.io connection established');
+    this.socket.on('connect', () => {
+      console.log('Socket.io connection established');
 
-        /* Start sending keep-alive messages every 30 seconds 
-        setInterval(() => {
-          this.socket.emit('keep-alive');
-        }, 30000);*/
-      });
-  });
+      /* Start sending keep-alive messages every 30 seconds 
+      setInterval(() => {
+        this.socket.emit('keep-alive');
+      }, 30000);*/
+    });
   }
 
   // Define Socket.io event listeners 
